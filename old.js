@@ -133,13 +133,24 @@ const Stats = mongoose.model("Stats", statsSchema);
 // -----------------------
 // Multer File Upload Config
 // -----------------------
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, "uploads/");
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date.now() + "-" + file.originalname);
+//   }
+// });
+
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => {
+    return {
+      folder: "myproject_images",
+      format: "png", // ya auto bhi kar sakte ho
+      public_id: Date.now() + "-" + file.originalname,
+    };
   },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
-  }
 });
 
 const upload = multer({ storage });
@@ -215,12 +226,23 @@ async function updateStatsOnPurchase(productPrice, rewardAmount) {
 
 
 app.post("/test-upload", upload.single("image"), (req, res) => {
-  console.log("REQ FILE:", req.file);
-  res.json({ success: true, file: req.file });
+  try {
+    console.log("FILE:", req.file);
+
+    res.json({
+      success: true,
+      file: req.file
+    });
+
+  } catch (err) {
+    console.error("UPLOAD ERROR:", err); // 👈 ye zaroor print karega
+    res.status(500).json({ error: err.message });
+  }
 });
 
 
 app.post("/api/categories/create",upload.single("image"), async (req, res) => {
+  
   try {
   
       const { name } = req.body;
@@ -246,7 +268,7 @@ app.post("/api/categories/create",upload.single("image"), async (req, res) => {
   
       const category = new Category({
         name: name.toLowerCase(),
-        image : req.file ? `/uploads/${(req.file.path || req.file.url)}` : ""
+        image : req.file ? (req.file.path || req.file.url) : ""
       });
   
       await category.save();
@@ -268,6 +290,12 @@ app.post("/api/categories/create",upload.single("image"), async (req, res) => {
     }
   });
 
+  // app.post("/api/categories/create", (req,res)=>
+  // {
+
+  //   res.json({message:"API working"})
+
+  //  })
 
 // GET ALL CATEGORIES
   app.get("/api/categories", async (req, res) => {
@@ -867,6 +895,9 @@ app.put("/api/admin/update-user-status",checkApiKey, async (req, res) => {
 // -----------------------
 // Start Server
 // -----------------------
+console.log("CLOUD NAME:", process.env.CLOUDINARY_CLOUD_NAME);
+console.log("API KEY:", process.env.CLOUDINARY_API_KEY);
+console.log("SECRET:", process.env.CLOUDINARY_API_SECRET);
 
 const PORT = process.env.PORT || 8000;
 app.listen(8000, () => console.log(`Server running on port ${PORT}`));
