@@ -7,6 +7,20 @@ import multer from "multer";
 import path from "path";
 import { userInfo } from "os";
 import fs from "fs"; 
+// const multer = require("multer");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+// cloudinary.js
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// module.exports = cloudinary;
+
+
 
 dotenv.config();
 
@@ -25,9 +39,7 @@ mongoose.connect(uri)
 .catch(err => console.error("MongoDB connection error:", err));
 
 // -----------------------
-// Schema
-
-
+// Schemas
 // -----------------------
 
 const categorySchema = new mongoose.Schema({
@@ -123,14 +135,23 @@ const Stats = mongoose.model("Stats", statsSchema);
 // -----------------------
 // Multer File Upload Config
 // -----------------------
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, "uploads/");
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date.now() + "-" + file.originalname);
+//   }
+// });
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "myproject_images", // folder in Cloudinary
+    allowed_formats: ["jpg", "png", "jpeg"],
   },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
-  }
 });
+
+const upload = multer({ storage });
 
 const fileFilter = (req, file, cb) => {
   const allowedTypes = /jpeg|jpg|png|webp/;
@@ -141,11 +162,11 @@ const fileFilter = (req, file, cb) => {
   else cb("Only image files are allowed!");
 };
 
-const upload = multer({
-  storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
-  fileFilter
-});
+// const upload = multer({
+//   storage,
+//   limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+//   fileFilter
+// });
 
 
 
@@ -183,7 +204,7 @@ async function updateStatsOnPurchase(productPrice, rewardAmount) {
     if(apiKey !== process.env.REACT_APP_KEY){
       return res.status(403).json({
         success:false,
-        message:"Invalid API key"+ apiKey
+        message:"Invalid API key"
       })
     }
     const allowedOrigin = "http://localhost:8080";
@@ -227,7 +248,8 @@ app.post("/api/categories/create",checkApiKey,upload.single("image"), async (req
   
       const category = new Category({
         name: name.toLowerCase(),
-        image: req.file ? `/uploads/${req.file.filename}` : ""
+        image: req.file ? req.file.path : "", // Cloudinary URL
+
       });
   
       await category.save();
