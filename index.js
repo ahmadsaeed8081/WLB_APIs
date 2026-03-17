@@ -31,7 +31,7 @@ app.use("/uploads", express.static("uploads"));
 // -----------------------
 // MongoDB Connection
 // -----------------------pHd83y5XlySz96cO
-const uri ="mongodb://localhost:27017/weblifebiz"
+const uri ="mongodb+srv://weblifebizmlm_db_user:10dMrjSP2uHJc6ql@ecommerce-cluster.uv9wvzz.mongodb.net/?appName=ecommerce-cluster"
 mongoose.connect(uri)
 .then(() => console.log("MongoDB Connected"))
 .catch(err => console.error("MongoDB connection error:", err));
