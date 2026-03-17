@@ -8,9 +8,8 @@ import path from "path";
 import { userInfo } from "os";
 import fs from "fs"; 
 // const multer = require("multer");
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
-// cloudinary.js
-const cloudinary = require("cloudinary").v2;
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -368,7 +367,7 @@ app.post("/api/products/create",checkApiKey, upload.single("image"), async (req,
       price: Number(price),
       reward: Number(reward),
       description,
-      image: req.file.filename, // store image path
+      image: `/uploads/${req.file.filename}`, // store image path
       category: category.toLowerCase().trim()
     });
 
