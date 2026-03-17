@@ -368,7 +368,7 @@ app.post("/api/products/create",checkApiKey, upload.single("image"), async (req,
       price: Number(price),
       reward: Number(reward),
       description,
-      image: `/uploads/${req.file.filename}`, // store image path
+      image: req.file.filename, // store image path
       category: category.toLowerCase().trim()
     });
 
