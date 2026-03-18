@@ -202,7 +202,7 @@ async function updateStatsOnPurchase(productPrice, rewardAmount) {
     const allowedOrigin1 = "https://admin.weblifebiz.com/";
 
     if (req.headers.origin !== allowedOrigin && req.headers.origin !== allowedOrigin1) {
-    return res.status(403).json({ message: "Unauthorized domain"+ req.headers.origin +"-> "+allowedOrigin });
+    return res.status(403).json({ message: "Unauthorized domain"+req.headers.origin });
     }
   
     next();
@@ -240,7 +240,7 @@ app.post("/api/categories/create",checkApiKey,upload.single("image"), async (req
   
       const category = new Category({
         name: name.toLowerCase(),
-        image : req.file ? `/uploads/${(req.file.path || req.file.url)}` : ""
+        image: `/uploads/${req.file.filename}`, // store image path
       });
   
       await category.save();
@@ -360,7 +360,7 @@ app.post("/api/products/create",checkApiKey, upload.single("image"), async (req,
       price: Number(price),
       reward: Number(reward),
       description,
-      image : req.file ? `/uploads/${(req.file.path || req.file.url)}` : "",
+      image: `/uploads/${req.file.filename}`, // store image path
       category: category.toLowerCase().trim()
     });
 
