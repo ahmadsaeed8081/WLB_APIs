@@ -198,8 +198,8 @@ async function updateStatsOnPurchase(productPrice, rewardAmount) {
         message:"Invalid API key"
       })
     }
-    const allowedOrigin = "http://localhost:8080";
-    const allowedOrigin1 = "http://localhost:8081";
+    const allowedOrigin = "https://wlb-admin.vercel.app/";
+    const allowedOrigin1 = "https://admin.weblifebiz.com/";
 
     if (req.headers.origin !== allowedOrigin && req.headers.origin !== allowedOrigin1) {
     return res.status(403).json({ message: "Unauthorized domain"+req.headers.origin });
@@ -214,13 +214,7 @@ async function updateStatsOnPurchase(productPrice, rewardAmount) {
 // -----------------------
 
 
-app.post("/test-upload", upload.single("image"), (req, res) => {
-  console.log("REQ FILE:", req.file);
-  res.json({ success: true, file: req.file });
-});
-
-
-app.post("/api/categories/create",upload.single("image"), async (req, res) => {
+app.post("/api/categories/create",checkApiKey,upload.single("image"), async (req, res) => {
   try {
   
       const { name } = req.body;
@@ -366,7 +360,7 @@ app.post("/api/products/create",checkApiKey, upload.single("image"), async (req,
       price: Number(price),
       reward: Number(reward),
       description,
-      image: `/uploads/${req.file.filename}`, // store image path
+      image : req.file ? `/uploads/${(req.file.path || req.file.url)}` : "",
       category: category.toLowerCase().trim()
     });
 
