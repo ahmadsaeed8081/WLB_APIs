@@ -198,11 +198,11 @@ async function updateStatsOnPurchase(productPrice, rewardAmount) {
         message:"Invalid API key"
       })
     }
-    const allowedOrigin = "https://wlb-admin.vercel.app/";
-    const allowedOrigin1 = "https://admin.weblifebiz.com/";
+    const allowedOrigin = "https://wlb-admin.vercel.app";
+    const allowedOrigin1 = "https://admin.weblifebiz.com";
 
     if (req.headers.origin !== allowedOrigin && req.headers.origin !== allowedOrigin1) {
-    return res.status(403).json({ message: "Unauthorized domain"+req.headers.origin+"-> " + allowedOrigin1});
+    return res.status(403).json({ message: "Unauthorized domain"+req.headers.origin});
     }
   
     next();
