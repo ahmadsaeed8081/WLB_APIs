@@ -339,7 +339,7 @@ app.get("/api/products", async (req, res) => {
   });
 
 
-app.post("/api/products/create",checkApiKey, upload.single("image"), async (req, res) => {
+app.post("/api/products/create", upload.single("image"), async (req, res) => {
   try {
     const { name, price, reward, description, category } = req.body;
 
