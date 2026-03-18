@@ -202,7 +202,7 @@ async function updateStatsOnPurchase(productPrice, rewardAmount) {
     const allowedOrigin1 = "https://admin.weblifebiz.com/";
 
     if (req.headers.origin !== allowedOrigin && req.headers.origin !== allowedOrigin1) {
-    return res.status(403).json({ message: "Unauthorized domain"+req.headers.origin });
+    return res.status(403).json({ message: "Unauthorized domain"+req.headers.origin+"-> " + allowedOrigin1});
     }
   
     next();
