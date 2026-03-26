@@ -199,10 +199,12 @@ async function updateStatsOnPurchase(productPrice, rewardAmount) {
       })
     }
     const allowedOrigin = "https://wlb-admin.vercel.app";
-    const allowedOrigin1 = "https://wlb-shoping.vercel.app/";
-
-    if (req.headers.origin !== allowedOrigin && req.headers.origin !== allowedOrigin1) {
-    return res.status(403).json({ message: "Unauthorized domain"+req.headers.origin});
+    const allowedOrigin1 = "https://wlb-shoping.vercel.app";
+    const allowedOrigin2 = "https://admin.weblifebiz.com";
+    const allowedOrigin3 = "https://weblifebiz.com";
+    if (req.headers.origin !== allowedOrigin && req.headers.origin !== allowedOrigin1 && req.headers.origin !== allowedOrigin2 && req.headers.origin !== allowedOrigin3) 
+    {
+      return res.status(403).json({ message: "Unauthorized domain"+req.headers.origin});
     }
   
     next();
